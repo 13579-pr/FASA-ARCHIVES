@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>华夏重工 · 动态密钥系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #141414;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, 'Roboto', 'Microsoft YaHei', sans-serif;
+            padding: 24px;
+        }
+
+        /* 主容器 - 严肃扁平，复杂层次 */
+        .security-vessel {
+            width: 100%;
+            max-width: 560px;
+            background: #ffffff;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.6);
+            position: relative;
+            border: 1px solid #d0d0d0;
+            transition: all 0.2s;
+        }
+
+        /* 顶部黑灰区域，增加严谨感 */
+        .vessel-header {
+            background: #1e1e1e;
+            height: 6px;
+            width: 100%;
+        }
+
+        .vessel-header-accent {
+            background: #3a3a3a;
+            height: 2px;
+            width: 40%;
+            margin-top: -2px;
+        }
+
+        /* 内容容器 */
+        .step-container {
+            padding: 42px 38px 48px 38px;
+            position: relative;
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 步骤通用样式 + 动画 */
+        .auth-step {
+            transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.28s ease;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .auth-step.hidden-step {
+            display: none;
+            opacity: 0;
+            transform: translateX(8px);
+        }
+
+        .auth-step.enter-step {
+            display: block;
+            animation: slideFade 0.38s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+        }
+
+        @keyframes slideFade {
+            0% {
+                opacity: 0;
+                transform: translateY(14px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 严肃标题区 */
+        .step-suptitle {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #5a5a5a;
+            border-left: 2px solid #9e9e9e;
+            padding-left: 12px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .step-headline {
+            font-size: 26px;
+            font-weight: 600;
+            color: #111;
+            margin-bottom: 12px;
+            letter-spacing: -0.2px;
+        }
+
+        .step-divider {
+            width: 42px;
+            height: 2px;
+            background: #2e2e2e;
+            margin: 18px 0 28px 0;
+        }
+
+        /* 问题区域 - 极度简约只显示问题和输入 */
+        .question-text {
+            font-size: 18px;
+            font-weight: 500;
+            color: #1a1a1a;
+            background: #f6f6f6;
+            padding: 18px 16px;
+            border-left: 4px solid #3c3c3c;
+            margin-bottom: 28px;
+            letter-spacing: -0.2px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            background: #ffffff;
+            border: 1px solid #c2c2c2;
+            font-size: 15px;
+            color: #1e1e1e;
+            transition: 0.2s;
+            outline: none;
+            font-family: 'SF Mono', 'Courier New', monospace;
+            margin-bottom: 22px;
+        }
+
+        .input-field:focus {
+            border-color: #2c2c2c;
+            box-shadow: 0 0 0 2px rgba(44,44,44,0.1);
+        }
+
+        /* 严肃按钮 */
+        .verify-button {
+            width: 100%;
+            background: #2a2a2a;
+            border: none;
+            padding: 14px 0;
+            font-size: 15px;
+            font-weight: 500;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.05s;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #0f0f0f;
+        }
+
+        .verify-button:hover {
+            background: #3f3f3f;
+        }
+
+        .verify-button:active {
+            transform: scale(0.98);
+            background: #1c1c1c;
+        }
+
+        /* 错误消息块 */
+        .error-msg {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #b32d2d;
+            background: #faf2f2;
+            padding: 10px 14px;
+            border-left: 3px solid #b32d2d;
+            display: none;
+            font-weight: 450;
+        }
+
+        /* 第三步密钥生成区域（最后一步）风格延续 */
+        .time-panel {
+            background: #f5f5f5;
+            padding: 14px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 32px;
+            font-size: 14px;
+            color: #2e2e2e;
+            text-align: center;
+            font-weight: 450;
+        }
+
+        #currentTime {
+            font-weight: 600;
+            color: #0f0f0f;
+            letter-spacing: 0.2px;
+        }
+
+        .key-area {
+            margin-bottom: 32px;
+        }
+
+        #secretKey {
+            width: 100%;
+            height: 68px;
+            font-size: 26px;
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid #adadad;
+            background: #fefefe;
+            color: #181818;
+            outline: none;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 1px;
+        }
+
+        .double-btn {
+            display: flex;
+            gap: 18px;
+            margin: 8px 0 12px;
+        }
+
+        .secondary-btn {
+            flex: 1;
+            background: #3a3a3a;
+            border: none;
+            padding: 12px 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: #f0f0f0;
+            cursor: pointer;
+            transition: 0.2s;
+            border-bottom: 1px solid #5a5a5a;
+        }
+
+        .secondary-btn:hover {
+            background: #2a2a2a;
+        }
+
+        .copy-success-tip {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #2c6e2c;
+            background: #edf5ed;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #c2d6c2;
+            display: none;
+        }
+
+        .gen-footer {
+            margin-top: 32px;
+            font-size: 11px;
+            color: #7a7a7a;
+            border-top: 1px solid #eaeaea;
+            padding-top: 22px;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        /* 装饰性严肃细线 */
+        .geometric-line {
+            height: 1px;
+            background: repeating-linear-gradient(90deg, #b0b0b0, #b0b0b0 6px, transparent 6px, transparent 12px);
+            margin: 18px 0 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="security-vessel">
+    <div class="vessel-header"></div>
+    <div class="vessel-header-accent"></div>
+    <div class="step-container" id="stepRoot">
+        <!-- 步骤1: 身份核验 (姓名) -->
+        <div id="stepIdentity" class="auth-step">
+            <div class="step-suptitle">准入验证 · 一级</div>
+            <div class="step-headline">身份核验</div>
+            <div class="step-divider"></div>
+            <div class="question-text">授权身份标识</div>
+            <input type="text" id="identityField" class="input-field" placeholder="" autocomplete="off">
+            <button id="btnIdentity" class="verify-button">确认身份</button>
+            <div id="identityErrorMsg" class="error-msg"></div>
+        </div>
+
+        <!-- 动态问题步骤容器：问题1~4将会通过js动态创建 但为了结构清晰，预先放置空div? 采用动态生成或预先定义后切换。为保证动画完美，预先定义四个步骤并动态控制内容 -->
+        <!-- 问题步骤2: 黑夜 -->
+        <div id="stepQ1" class="auth-step hidden-step">
+            <div class="step-suptitle"></div>
+            <div class="step-headline">权限校验</div>
+            <div class="step-divider"></div>
+            <div class="question-text" id="q1Text">黑夜，何人之号也？</div>
+            <input type="text" id="q1Input" class="input-field" placeholder="" autocomplete="off">
+            <button id="btnQ1" class="verify-button">验证并继续</button>
+            <div id="q1Error" class="error-msg"></div>
+        </div>
+
+        <!-- 问题步骤3: 天皇 -->
+        <div id="stepQ2" class="auth-step hidden-step">
+            <div class="step-suptitle"></div>
+            <div class="step-headline">权限校验</div>
+            <div class="step-divider"></div>
+            <div class="question-text" id="q2Text">天皇，何人之号也？</div>
+            <input type="text" id="q2Input" class="input-field" placeholder="" autocomplete="off">
+            <button id="btnQ2" class="verify-button">验证并继续</button>
+            <div id="q2Error" class="error-msg"></div>
+        </div>
+
+        <!-- 问题步骤4: 公司始年 -->
+        <div id="stepQ3" class="auth-step hidden-step">
+            <div class="step-suptitle"></div>
+            <div class="step-headline">权限校验</div>
+            <div class="step-divider"></div>
+            <div class="question-text" id="q3Text">公司，何年之始也？</div>
+            <input type="text" id="q3Input" class="input-field" placeholder="" autocomplete="off">
+            <button id="btnQ3" class="verify-button">验证并继续</button>
+            <div id="q3Error" class="error-msg"></div>
+        </div>
+
+        <!-- 问题步骤5: 公司始地 -->
+        <div id="stepQ4" class="auth-step hidden-step">
+            <div class="step-suptitle"></div>
+            <div class="step-headline">权限校验</div>
+            <div class="step-divider"></div>
+            <div class="question-text" id="q4Text">公司，何地之始也？</div>
+            <input type="text" id="q4Input" class="input-field" placeholder="" autocomplete="off">
+            <button id="btnQ4" class="verify-button">验证并继续</button>
+            <div id="q4Error" class="error-msg"></div>
+        </div>
+
+        <!-- 步骤6: 最终动态密钥生成器 -->
+        <div id="stepGenerator" class="auth-step hidden-step">
+            <div class="step-suptitle">安全终端</div>
+            <div class="step-headline">动态密钥生成器</div>
+            <div class="step-divider"></div>
+            <div class="time-panel">
+                东八区标准时间：<span id="currentTime">--:--:--</span>
+            </div>
+            <div class="key-area">
+                <input type="text" id="secretKey" readonly placeholder="授权后自动生成密钥">
+            </div>
+            <div class="double-btn">
+                <button id="manualGenBtn" class="secondary-btn">生成密钥</button>
+                <button id="copyKeyBtn" class="secondary-btn">复制密钥</button>
+            </div>
+            <div id="copyTip" class="copy-success-tip">密钥复制成功</div>
+            <div class="gen-footer">运算规则：纯数值加法 · 实时时间锚定 · 与华夏重工登录系统完全匹配</div>
+            <div class="geometric-line"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- 验证数据 ----------
+        // 身份信息 (不区分大小写)
+        const VALID_IDS = ["ZHANG YAOLIN", "ZHANG JIAJUN", "HUANG PENGRONG"];
+        
+        // 问题答案映射 (按顺序)
+        const ANSWERS_MAP = {
+            q1: "张嘉俊",   // 黑夜
+            q2: "张耀霖",   // 天皇
+            q3: "2019",     // 公司始年
+            q4: "天河"      // 公司始地
+        };
+        
+        // DOM 元素
+        const stepIdentity = document.getElementById('stepIdentity');
+        const stepQ1 = document.getElementById('stepQ1');
+        const stepQ2 = document.getElementById('stepQ2');
+        const stepQ3 = document.getElementById('stepQ3');
+        const stepQ4 = document.getElementById('stepQ4');
+        const stepGen = document.getElementById('stepGenerator');
+        
+        const identityInput = document.getElementById('identityField');
+        const btnIdentity = document.getElementById('btnIdentity');
+        const identityError = document.getElementById('identityErrorMsg');
+        
+        // 问题输入和按钮
+        const q1Input = document.getElementById('q1Input');
+        const btnQ1 = document.getElementById('btnQ1');
+        const q1Error = document.getElementById('q1Error');
+        const q2Input = document.getElementById('q2Input');
+        const btnQ2 = document.getElementById('btnQ2');
+        const q2Error = document.getElementById('q2Error');
+        const q3Input = document.getElementById('q3Input');
+        const btnQ3 = document.getElementById('btnQ3');
+        const q3Error = document.getElementById('q3Error');
+        const q4Input = document.getElementById('q4Input');
+        const btnQ4 = document.getElementById('btnQ4');
+        const q4Error = document.getElementById('q4Error');
+        
+        // 生成器部分
+        const currentTimeSpan = document.getElementById('currentTime');
+        const secretKeyInput = document.getElementById('secretKey');
+        const manualGenBtn = document.getElementById('manualGenBtn');
+        const copyKeyBtn = document.getElementById('copyKeyBtn');
+        const copyTip = document.getElementById('copyTip');
+        
+        let refreshTimer = null;
+        
+        // ---------- 核心辅助: 动画切换 ----------
+        function switchToStep(targetStep) {
+            const allSteps = [stepIdentity, stepQ1, stepQ2, stepQ3, stepQ4, stepGen];
+            allSteps.forEach(step => {
+                if (step) {
+                    step.classList.add('hidden-step');
+                    step.classList.remove('enter-step');
+                }
+            });
+            if (!targetStep) return;
+            targetStep.classList.remove('hidden-step');
+            targetStep.classList.add('enter-step');
+            targetStep.addEventListener('animationend', () => {
+                if (targetStep) targetStep.classList.remove('enter-step');
+            }, { once: true });
+        }
+        
+        // 清除计时器
+        function stopKeyRefresh() {
+            if (refreshTimer) {
+                clearInterval(refreshTimer);
+                refreshTimer = null;
+            }
+        }
+        
+        // 东八区时间计算 (与原始规则100%一致)
+        function getCSTime() {
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const cst = new Date(utc + (8 * 3600000));
+            const formatTime = `${cst.getFullYear()}年${(cst.getMonth()+1).toString().padStart(2,'0')}月${cst.getDate().toString().padStart(2,'0')}日 ${cst.getHours().toString().padStart(2,'0')}:${cst.getMinutes().toString().padStart(2,'0')}:${cst.getSeconds().toString().padStart(2,'0')}`;
+            return {
+                timeStr: formatTime,
+                year: cst.getFullYear(),
+                month: cst.getMonth()+1,
+                day: cst.getDate(),
+                hour: cst.getHours(),
+                minute: cst.getMinutes()
+            };
+        }
+        
+        function computeKey() {
+            const t = getCSTime();
+            return (t.year * 10086) + (t.month * 10086) + (t.day * 1006) + (t.hour * 10086) + (t.minute * 10086);
+        }
+        
+        function refreshKeyAndTime() {
+            if (!stepGen || stepGen.classList.contains('hidden-step')) return;
+            const timeObj = getCSTime();
+            if (currentTimeSpan) currentTimeSpan.innerText = timeObj.timeStr;
+            const newKey = computeKey();
+            if (secretKeyInput) secretKeyInput.value = newKey;
+        }
+        
+        function startGeneratorRefresh() {
+            stopKeyRefresh();
+            refreshKeyAndTime();
+            refreshTimer = setInterval(() => {
+                if (stepGen && !stepGen.classList.contains('hidden-step')) {
+                    refreshKeyAndTime();
+                }
+            }, 1000);
+        }
+        
+        // 手动生成
+        function manualGenerate() {
+            if (!stepGen || stepGen.classList.contains('hidden-step')) return;
+            refreshKeyAndTime();
+            if (copyTip) copyTip.style.display = 'none';
+        }
+        
+        async function copySecret() {
+            if (!secretKeyInput || !secretKeyInput.value) {
+                if(copyTip) { copyTip.innerText = '无有效密钥'; copyTip.style.display = 'block'; setTimeout(()=>{if(copyTip) copyTip.style.display='none';},1200); }
+                return;
+            }
+            const val = secretKeyInput.value;
+            try {
+                await navigator.clipboard.writeText(val);
+                if(copyTip) { copyTip.innerText = '密钥复制成功'; copyTip.style.display = 'block'; setTimeout(()=>{if(copyTip) copyTip.style.display='none';},1500); }
+            } catch(e) {
+                secretKeyInput.select();
+                document.execCommand('copy');
+                if(copyTip) { copyTip.innerText = '密钥复制成功'; copyTip.style.display = 'block'; setTimeout(()=>{if(copyTip) copyTip.style.display='none';},1500); }
+            }
+        }
+        
+        // ---------- 验证逻辑 (不区分大小写) ----------
+        function verifyIdentity() {
+            identityError.style.display = 'none';
+            let raw = identityInput.value.trim();
+            if (raw === "") {
+                identityError.innerText = '请输入身份标识';
+                identityError.style.display = 'block';
+                return;
+            }
+            const upperRaw = raw.toUpperCase();
+            if (!VALID_IDS.includes(upperRaw)) {
+                identityError.innerText = '身份验证失败，无访问权限';
+                identityError.style.display = 'block';
+                return;
+            }
+            // 清空后续问题输入
+            if(q1Input) q1Input.value = '';
+            if(q2Input) q2Input.value = '';
+            if(q3Input) q3Input.value = '';
+            if(q4Input) q4Input.value = '';
+            // 切换到第一个问题
+            switchToStep(stepQ1);
+        }
+        
+        // 通用问题验证函数
+        function verifyQuestion(stepId, inputElem, errorElem, expectedAnswer, nextStep) {
+            errorElem.style.display = 'none';
+            let userVal = inputElem.value.trim();
+            if (userVal === "") {
+                errorElem.innerText = '答案不能为空';
+                errorElem.style.display = 'block';
+                return;
+            }
+            let match = false;
+            // 对于年份直接比较字符串，对于中文答案直接比较（不区分大小写对中文无意义，但确保trim）
+            if (expectedAnswer === "2019") {
+                match = (userVal === "2019");
+            } else {
+                // 中文答案精确匹配（去除空格）
+                match = (userVal === expectedAnswer);
+            }
+            if (!match) {
+                errorElem.innerText = '验证未通过，请重试';
+                errorElem.style.display = 'block';
+                return;
+            }
+            // 正确 -> 切换到下一步
+            switchToStep(nextStep);
+        }
+        
+        // 绑定事件
+        btnIdentity.addEventListener('click', verifyIdentity);
+        identityInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') verifyIdentity(); });
+        
+        // 问题1: 黑夜
+        btnQ1.addEventListener('click', () => {
+            verifyQuestion('q1', q1Input, q1Error, ANSWERS_MAP.q1, stepQ2);
+        });
+        q1Input.addEventListener('keypress', (e) => { if(e.key === 'Enter') btnQ1.click(); });
+        
+        // 问题2: 天皇
+        btnQ2.addEventListener('click', () => {
+            verifyQuestion('q2', q2Input, q2Error, ANSWERS_MAP.q2, stepQ3);
+        });
+        q2Input.addEventListener('keypress', (e) => { if(e.key === 'Enter') btnQ2.click(); });
+        
+        // 问题3: 公司始年
+        btnQ3.addEventListener('click', () => {
+            verifyQuestion('q3', q3Input, q3Error, ANSWERS_MAP.q3, stepQ4);
+        });
+        q3Input.addEventListener('keypress', (e) => { if(e.key === 'Enter') btnQ3.click(); });
+        
+        // 问题4: 公司始地
+        btnQ4.addEventListener('click', () => {
+            verifyQuestion('q4', q4Input, q4Error, ANSWERS_MAP.q4, stepGen);
+            // 验证正确进入生成器时，启动定时刷新
+            if (!stepGen.classList.contains('hidden-step')) {
+                startGeneratorRefresh();
+            } else {
+                // 确保延迟重置一次
+                setTimeout(() => {
+                    if (!stepGen.classList.contains('hidden-step')) startGeneratorRefresh();
+                }, 50);
+            }
+        });
+        q4Input.addEventListener('keypress', (e) => { if(e.key === 'Enter') btnQ4.click(); });
+        
+        // 生成器按钮
+        manualGenBtn.addEventListener('click', manualGenerate);
+        copyKeyBtn.addEventListener('click', copySecret);
+        
+        // 重置整个状态（页面加载，第一步可见，其余隐藏，清除计时器）
+        function fullReset() {
+            stopKeyRefresh();
+            // 所有步骤隐藏
+            const steps = [stepIdentity, stepQ1, stepQ2, stepQ3, stepQ4, stepGen];
+            steps.forEach(s => { if(s) s.classList.add('hidden-step'); });
+            stepIdentity.classList.remove('hidden-step');
+            // 清空所有输入和错误
+            if(identityInput) identityInput.value = '';
+            if(q1Input) q1Input.value = '';
+            if(q2Input) q2Input.value = '';
+            if(q3Input) q3Input.value = '';
+            if(q4Input) q4Input.value = '';
+            const errs = [identityError, q1Error, q2Error, q3Error, q4Error];
+            errs.forEach(e => { if(e) e.style.display = 'none'; });
+            if(copyTip) copyTip.style.display = 'none';
+            if(secretKeyInput) secretKeyInput.value = '';
+            if(currentTimeSpan) currentTimeSpan.innerText = '等待授权';
+        }
+        
+        // 监听页面关闭清理定时器
+        window.addEventListener('beforeunload', () => { stopKeyRefresh(); });
+        fullReset();
+        
+        // 附加安全：如果通过最后一步切换到生成器后，确保刷新，并且在生成器显示时一直实时
+        // 当切换到stepGen时已在btnQ4里启动startGeneratorRefresh，但为了以防万一用户刷新后走到生成器前
+        // 在stepGen显示后额外保证一次
+        const observer = new MutationObserver(() => {
+            if (stepGen && !stepGen.classList.contains('hidden-step') && !refreshTimer) {
+                startGeneratorRefresh();
+            }
+        });
+        observer.observe(stepGen, { attributes: true, attributeFilter: ['class'] });
+    })();
+</script>
+</body>
+</html>
