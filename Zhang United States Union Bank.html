@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张合众国联合银行 - 综合金融服务</title>
+    <style>
+        :root {
+            --primary: #0a2540;
+            --primary-light: #1a3a5c;
+            --accent: #c9a96e;
+            --accent-light: #d4b87a;
+            --accent-dark: #9b7a3b;
+            --bg: #f2f4f7;
+            --surface: #ffffff;
+            --text: #1a1a2e;
+            --text-secondary: #4a5568;
+            --text-muted: #6b7280;
+            --border: #e2e8f0;
+            --success: #0d7c4b;
+            --danger: #b91c1c;
+            --warning: #b45309;
+            --info: #1e40af;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow: 0 4px 8px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 20px rgba(0,0,0,0.06);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --transition: 0.2s ease;
+            --font-mono: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+        .top-bar {
+            background: var(--primary);
+            color: #fff;
+            padding: 8px 0;
+            border-bottom: 2px solid var(--accent);
+        }
+        .top-bar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+        .bank-brand { font-weight: 700; letter-spacing: 0.03em; color: var(--accent-light); }
+        .live-time { font-family: var(--font-mono); font-size: 0.8rem; color: #a0aec0; }
+        .secure-badge { display:flex; align-items:center; gap:6px; color:#68d391; font-weight:500; }
+        .secure-dot { width:7px; height:7px; border-radius:50%; background:#48bb78; box-shadow:0 0 6px rgba(72,187,120,0.6); animation:pulse 2s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.5;transform:scale(1.6);} }
+        .main-container { max-width:1200px; margin:0 auto; padding:20px; }
+        .bank-header {
+            background: linear-gradient(135deg, #0a2540, #0f2f50, #0a2540);
+            border-radius: var(--radius-lg);
+            padding: 24px 28px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: var(--shadow-md);
+            border:1px solid rgba(201,169,110,0.25);
+            position:relative;
+        }
+        .bank-header::after {
+            content: ''; position: absolute; bottom:0; left:0; right:0; height:3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+        .bank-logo { display:flex; align-items:center; gap:12px; }
+        .bank-icon {
+            width:48px; height:48px; border-radius:50%;
+            background: linear-gradient(135deg, #c9a96e, #e0c78a);
+            color:#0a2540; display:flex; align-items:center; justify-content:center;
+            font-weight:800; font-size:1.3rem; letter-spacing:1px;
+            box-shadow:0 4px 12px rgba(201,169,110,0.4);
+        }
+        .bank-title h1 { font-size:1.5rem; font-weight:700; color:#fff; letter-spacing:0.02em; margin:0; }
+        .bank-title .subtitle { font-size:0.7rem; color:var(--accent-light); letter-spacing:0.05em; text-transform:uppercase; }
+        .user-area { text-align:right; color:#fff; }
+        .user-greeting { font-weight:600; }
+        .user-actions button {
+            background:none; border:1px solid rgba(255,255,255,0.3); color:#fff;
+            padding:6px 14px; border-radius:4px; cursor:pointer; font-size:0.8rem; margin-left:8px;
+            transition: all 0.2s;
+        }
+        .user-actions button:hover { background:rgba(255,255,255,0.1); border-color:var(--accent); }
+        .card {
+            background: var(--surface); border-radius: var(--radius-lg); padding: 20px 24px;
+            margin-bottom: 16px; box-shadow: var(--shadow); border:1px solid var(--border);
+        }
+        .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; }
+        .card-title { font-size:1rem; font-weight:700; color:var(--primary); display:flex; align-items:center; gap:8px; }
+        .title-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); }
+        .auth-form { max-width:420px; margin:0 auto; }
+        .input-field { margin-bottom:16px; }
+        .input-field label { display:block; font-size:0.75rem; font-weight:600; color:var(--text-secondary); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.03em; }
+        .input-field input { width:100%; padding:10px 14px; border:2px solid var(--border); border-radius:var(--radius); font-size:0.95rem; transition:var(--transition); background:#fafbfc; }
+        .input-field input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(201,169,110,0.1); background:#fff; }
+        .btn {
+            display:inline-flex; align-items:center; justify-content:center; gap:6px;
+            padding:10px 20px; border-radius:6px; font-weight:600; font-size:0.9rem;
+            border:none; cursor:pointer; transition:all 0.2s; letter-spacing:0.02em;
+        }
+        .btn:active { transform:scale(0.97); }
+        .btn-primary { background:var(--primary); color:#fff; }
+        .btn-primary:hover { background:var(--primary-light); }
+        .btn-accent { background:linear-gradient(135deg, #c9a96e, #d4b87a); color:#0a2540; font-weight:700; box-shadow:0 2px 8px rgba(201,169,110,0.3); }
+        .btn-accent:hover { box-shadow:0 4px 12px rgba(201,169,110,0.45); }
+        .btn-danger { background:#fff; border:1px solid #fecaca; color:var(--danger); }
+        .btn-danger:hover { background:#fef2f2; border-color:var(--danger); }
+        .btn-sm { padding:6px 12px; font-size:0.78rem; }
+        .btn-block { width:100%; }
+        .dashboard-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        @media (max-width:768px) { .dashboard-grid { grid-template-columns:1fr; } .bank-header { flex-direction:column; text-align:center; } .user-area { text-align:center; } }
+        .balance-large { font-family:var(--font-mono); font-size:2.4rem; font-weight:800; color:var(--primary); text-align:center; padding:12px 0; transition:transform 0.2s; }
+        .balance-large.pop { animation:balancePop 0.4s ease; }
+        @keyframes balancePop { 0%{transform:scale(1);} 30%{transform:scale(1.05);color:var(--accent-dark);} 100%{transform:scale(1);} }
+        .balance-label { text-align:center; font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.05em; }
+        .input-group { display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; }
+        .input-group .input-field { flex:1; min-width:120px; }
+        .amount-input { font-family:var(--font-mono); font-weight:600; }
+        .stock-table { width:100%; border-collapse:collapse; font-size:0.9rem; }
+        .stock-table th { text-align:left; padding:12px 8px; border-bottom:2px solid var(--border); color:var(--text-secondary); font-weight:600; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.04em; }
+        .stock-table td { padding:10px 8px; border-bottom:1px solid #f1f5f9; }
+        .stock-table .price { font-family:var(--font-mono); font-weight:600; }
+        .change-positive { color:var(--success); }
+        .change-negative { color:var(--danger); }
+        .btn-trade { padding:4px 12px; font-size:0.75rem; margin-right:4px; }
+        .holding-item { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f1f5f9; align-items:center; }
+        .holding-qty { font-family:var(--font-mono); }
+        .tx-list { list-style:none; max-height:300px; overflow-y:auto; }
+        .tx-item { display:flex; gap:12px; padding:10px 0; border-bottom:1px solid #f3f4f6; font-size:0.9rem; }
+        .tx-icon-circle { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.9rem; flex-shrink:0; }
+        .tx-deposit { background:#e6f7ee; color:#0d7c4b; }
+        .tx-withdraw { background:#fef0ef; color:#b91c1c; }
+        .tx-transfer { background:#fef3e2; color:#b45309; }
+        .tx-stock { background:#e8f4fd; color:#1e40af; }
+        .tx-amount-positive { color:#0d7c4b; font-family:var(--font-mono); font-weight:600; }
+        .tx-amount-negative { color:#b91c1c; font-family:var(--font-mono); font-weight:600; }
+        .modal-overlay {
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center;
+            z-index:1000; animation:fadeIn 0.2s;
+        }
+        .modal {
+            background:#fff; border-radius:var(--radius-lg); padding:24px;
+            max-width:460px; width:90%; box-shadow:0 20px 40px rgba(0,0,0,0.2);
+        }
+        @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+        .hidden { display:none !important; }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-inner">
+            <span class="bank-brand">张合众国联合银行 · ZHZGUB</span>
+            <span class="live-time" id="liveTime"></span>
+            <span class="secure-badge"><span class="secure-dot"></span> 安全连接</span>
+        </div>
+    </div>
+    <div class="main-container" id="appRoot"></div>
+    <div id="modalContainer"></div>
+    <script>
+        (function() {
+            const BANK_NAME = '张合众国联合银行';
+            const STORAGE_KEY = 'zhzgub_bank_v4';
+
+            // 工具函数
+            const formatCurrency = (v) => '¥ ' + Number(v).toLocaleString('zh-CN', { minimumFractionDigits:2, maximumFractionDigits:2 });
+            const formatNumber = (v) => Number(v).toLocaleString('zh-CN', { minimumFractionDigits:2, maximumFractionDigits:2 });
+            const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2,8);
+            const nowISO = () => new Date().toISOString();
+            const dateTimeStr = (iso) => {
+                const d = new Date(iso);
+                return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+            };
+            const timeAgo = (iso) => {
+                const diff = Date.now() - new Date(iso).getTime();
+                const sec = Math.floor(diff/1000);
+                if(sec<60) return '刚刚';
+                const min=Math.floor(sec/60); if(min<60) return min+'分钟前';
+                const hr=Math.floor(min/60); if(hr<24) return hr+'小时前';
+                return dateTimeStr(iso);
+            };
+
+            function getDefaultData() {
+                return {
+                    users: [],
+                    accounts: [],
+                    transactions: [],
+                    stocks: {},          // accountId -> [{ symbol, qty, avgCost }]
+                    stockPool: []        // [{ symbol, name, price, prevClose }]  全局股票池
+                };
+            }
+
+            function loadData() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if(raw) {
+                        const data = JSON.parse(raw);
+                        if(!data.users) data.users=[];
+                        if(!data.accounts) data.accounts=[];
+                        if(!data.transactions) data.transactions=[];
+                        if(!data.stocks) data.stocks={};
+                        if(!data.stockPool) data.stockPool=[];
+                        return data;
+                    }
+                } catch(e) {}
+                const def = getDefaultData();
+                saveData(def);
+                return def;
+            }
+            function saveData(data) {
+                try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+                catch(e) { showToast('存储异常', 'error'); }
+            }
+            function getData() { return loadData(); }
+            function updateData(updater) {
+                const data = getData();
+                const newData = updater(data);
+                saveData(newData);
+                return newData;
+            }
+
+            // 股票价格模拟更新
+            function updateStockPrices(data) {
+                const pool = data.stockPool;
+                pool.forEach(stock => {
+                    const oldPrice = stock.price;
+                    // 随机波动 ±0.8%
+                    const changeRatio = (Math.random() - 0.48) * 0.016;
+                    let newPrice = oldPrice * (1 + changeRatio);
+                    newPrice = Math.max(0.01, newPrice);
+                    stock.price = Math.round(newPrice * 100) / 100;
+                    stock.change = Math.round((stock.price - stock.prevClose) * 100) / 100;
+                    stock.changePercent = stock.prevClose ? Math.round((stock.change / stock.prevClose) * 10000) / 100 : 0;
+                    stock.prevClose = oldPrice;
+                });
+            }
+
+            // 定时更新
+            setInterval(() => {
+                const data = getData();
+                updateStockPrices(data);
+                saveData(data);
+                if(appState.currentUser && appState.currentAccount) {
+                    refreshStockDisplay(); // 局部更新股票显示
+                }
+            }, 3000);
+
+            let appState = {
+                currentUser: null,
+                currentAccount: null,
+                view: 'login'
+            };
+
+            function showToast(msg, type='info') {
+                const container = document.getElementById('modalContainer');
+                const toast = document.createElement('div');
+                toast.style.position='fixed'; toast.style.top='20px'; toast.style.right='20px';
+                toast.style.padding='12px 20px'; toast.style.borderRadius='6px'; toast.style.color='#fff';
+                toast.style.fontWeight='600'; toast.style.zIndex='9999';
+                toast.style.animation='slideIn 0.3s ease';
+                if(type==='success') toast.style.background='#0d7c4b';
+                else if(type==='error') toast.style.background='#b91c1c';
+                else toast.style.background='#1e40af';
+                toast.textContent = msg;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+
+            function showModal(title, message, onConfirm, confirmText='确认', cancelText='取消') {
+                const container = document.getElementById('modalContainer');
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                overlay.innerHTML = `
+                    <div class="modal">
+                        <h3 style="margin-bottom:8px;color:#0a2540;">${title}</h3>
+                        <div style="color:#4a5568;margin-bottom:16px;">${message}</div>
+                        <div style="display:flex;gap:10px;justify-content:flex-end;">
+                            <button class="btn btn-sm" style="background:#e2e8f0;color:#1a1a2e;" id="modalCancel">${cancelText}</button>
+                            <button class="btn btn-accent btn-sm" id="modalConfirm">${confirmText}</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(overlay);
+                const close = () => overlay.remove();
+                overlay.querySelector('#modalCancel').addEventListener('click', close);
+                overlay.querySelector('#modalConfirm').addEventListener('click', () => {
+                    close();
+                    if(onConfirm) onConfirm();
+                });
+                overlay.addEventListener('click', (e) => { if(e.target===overlay) close(); });
+            }
+
+            function renderApp() {
+                const root = document.getElementById('appRoot');
+                if(!appState.currentUser) {
+                    root.innerHTML = renderAuthView();
+                    bindAuthEvents();
+                } else {
+                    root.innerHTML = renderDashboardView();
+                    bindDashboardEvents();
+                }
+                updateLiveTime();
+            }
+
+            function renderAuthView() {
+                const isLogin = appState.view === 'login';
+                return `
+                    <div class="bank-header">
+                        <div class="bank-logo">
+                            <div class="bank-icon">ZH</div>
+                            <div class="bank-title">
+                                <h1>${BANK_NAME}</h1>
+                                <div class="subtitle">Zhang-He-Zhong-Guo United Bank</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card auth-form">
+                        <div class="card-header">
+                            <div class="card-title"><span class="title-dot"></span>${isLogin ? '账户登录' : '注册新账户'}</div>
+                        </div>
+                        <div class="input-field">
+                            <label>姓名</label>
+                            <input type="text" id="authName" placeholder="请输入您的姓名">
+                        </div>
+                        <div class="input-field">
+                            <label>密码</label>
+                            <input type="password" id="authPassword" placeholder="请输入密码">
+                        </div>
+                        <div style="display:flex;gap:10px;">
+                            <button class="btn btn-accent btn-block" id="btnAuthSubmit">${isLogin ? '登录' : '注册'}</button>
+                        </div>
+                        <div style="margin-top:12px;text-align:center;font-size:0.85rem;">
+                            ${isLogin ? '没有账户？' : '已有账户？'}
+                            <a href="#" id="toggleAuth" style="color:var(--accent-dark);font-weight:600;text-decoration:none;">
+                                ${isLogin ? '立即注册' : '去登录'}
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function bindAuthEvents() {
+                document.getElementById('btnAuthSubmit').addEventListener('click', () => {
+                    const name = document.getElementById('authName').value.trim();
+                    const password = document.getElementById('authPassword').value.trim();
+                    if(!name || !password) { showToast('姓名和密码不能为空','error'); return; }
+                    const data = getData();
+                    if(appState.view === 'login') {
+                        const user = data.users.find(u => u.name === name && u.password === password);
+                        if(!user) { showToast('姓名或密码错误','error'); return; }
+                        appState.currentUser = { id: user.id, name: user.name };
+                        let account = data.accounts.find(a => a.userId === user.id);
+                        if(!account) {
+                            account = {
+                                id: generateId(),
+                                userId: user.id,
+                                accountNumber: '6222' + Date.now().toString().slice(-12),
+                                balance: 0,
+                                type: '储蓄账户'
+                            };
+                            data.accounts.push(account);
+                            data.stocks[account.id] = [];
+                            saveData(data);
+                        }
+                        appState.currentAccount = { id: account.id, accountNumber: account.accountNumber, balance: account.balance };
+                        appState.view = 'dashboard';
+                        renderApp();
+                        showToast(`欢迎，${user.name}`,'success');
+                    } else {
+                        if(data.users.some(u => u.name === name)) {
+                            showToast('该姓名已存在','error'); return;
+                        }
+                        const userId = generateId();
+                        const accountId = generateId();
+                        const newUser = { id: userId, name, password };
+                        const newAccount = {
+                            id: accountId,
+                            userId: userId,
+                            accountNumber: '6222' + Date.now().toString().slice(-12),
+                            balance: 0,
+                            type: '储蓄账户'
+                        };
+                        data.users.push(newUser);
+                        data.accounts.push(newAccount);
+                        data.stocks[accountId] = [];
+                        saveData(data);
+                        appState.currentUser = { id: userId, name };
+                        appState.currentAccount = { id: accountId, accountNumber: newAccount.accountNumber, balance: 0 };
+                        appState.view = 'dashboard';
+                        renderApp();
+                        showToast('注册成功，已开通储蓄账户','success');
+                    }
+                });
+                document.getElementById('toggleAuth').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    appState.view = appState.view === 'login' ? 'register' : 'login';
+                    renderApp();
+                });
+            }
+
+            function renderDashboardView() {
+                const data = getData();
+                const user = appState.currentUser;
+                const account = data.accounts.find(a => a.id === appState.currentAccount.id);
+                if(!account) {
+                    appState.currentUser = null;
+                    appState.view = 'login';
+                    renderApp();
+                    return '';
+                }
+                appState.currentAccount.balance = account.balance;
+                const userAccounts = data.accounts.filter(a => a.userId === user.id);
+                const accountOptions = userAccounts.map(a => `
+                    <option value="${a.id}" ${a.id === account.id ? 'selected' : ''}>
+                        ${a.type} (尾号${a.accountNumber.slice(-4)})
+                    </option>
+                `).join('');
+
+                const myTxs = data.transactions
+                    .filter(t => t.accountId === account.id)
+                    .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .slice(0, 8);
+                const txHtml = myTxs.map(tx => {
+                    const iconClass = tx.type === 'deposit' ? 'tx-deposit' :
+                                      tx.type === 'withdraw' ? 'tx-withdraw' :
+                                      tx.type.includes('transfer') ? 'tx-transfer' : 'tx-stock';
+                    const iconSymbol = tx.type === 'deposit' ? '↓' :
+                                       tx.type === 'withdraw' ? '↑' :
+                                       tx.type === 'transfer-out' ? '→' :
+                                       tx.type === 'transfer-in' ? '←' : '⇄';
+                    const amountClass = (tx.type === 'deposit' || tx.type === 'transfer-in' || tx.type === 'stock-sell') ? 'tx-amount-positive' : 'tx-amount-negative';
+                    const prefix = (tx.type === 'deposit' || tx.type === 'transfer-in' || tx.type === 'stock-sell') ? '+' : '-';
+                    return `
+                        <li class="tx-item">
+                            <div class="tx-icon-circle ${iconClass}">${iconSymbol}</div>
+                            <div style="flex:1;">
+                                <div>${tx.description}</div>
+                                <div style="font-size:0.7rem;color:#6b7280;">${dateTimeStr(tx.timestamp)}</div>
+                            </div>
+                            <div class="${amountClass}">${prefix}${formatCurrency(tx.amount)}</div>
+                        </li>
+                    `;
+                }).join('') || '<li style="text-align:center;color:#6b7280;padding:20px;">暂无交易记录</li>';
+
+                const stockPool = data.stockPool;
+                const stockTableRows = stockPool.map(s => {
+                    const changeClass = s.change >= 0 ? 'change-positive' : 'change-negative';
+                    const changeSign = s.change >= 0 ? '+' : '';
+                    return `
+                        <tr>
+                            <td><strong>${s.symbol}</strong></td>
+                            <td>${s.name}</td>
+                            <td class="price">${formatNumber(s.price)}</td>
+                            <td class="${changeClass}">${changeSign}${formatNumber(s.change)} (${changeSign}${s.changePercent}%)</td>
+                            <td>
+                                <button class="btn btn-sm btn-accent btn-trade buy-stock" data-symbol="${s.symbol}">买入</button>
+                                <button class="btn btn-sm btn-danger btn-trade sell-stock" data-symbol="${s.symbol}">卖出</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('') || '<tr><td colspan="5" style="text-align:center;color:#6b7280;padding:16px;">暂无股票，请添加</td></tr>';
+
+                const holdings = data.stocks[account.id] || [];
+                const holdingsHtml = holdings.map(h => {
+                    const stock = stockPool.find(s => s.symbol === h.symbol);
+                    const currentPrice = stock ? stock.price : 0;
+                    const marketValue = currentPrice * h.qty;
+                    const cost = h.avgCost * h.qty;
+                    const profit = marketValue - cost;
+                    const profitClass = profit >= 0 ? 'change-positive' : 'change-negative';
+                    return `
+                        <div class="holding-item">
+                            <div>
+                                <strong>${h.symbol}</strong> <span class="holding-qty">${h.qty} 股</span>
+                                <div style="font-size:0.7rem;color:#6b7280;">成本 ${formatNumber(h.avgCost)} | 现价 ${formatNumber(currentPrice)}</div>
+                            </div>
+                            <div class="${profitClass}" style="font-weight:600;">${profit >= 0 ? '+' : ''}${formatCurrency(profit)}</div>
+                        </div>
+                    `;
+                }).join('') || '<div style="text-align:center;color:#6b7280;padding:12px;">暂无持仓</div>';
+
+                return `
+                    <div class="bank-header">
+                        <div class="bank-logo">
+                            <div class="bank-icon">ZH</div>
+                            <div class="bank-title">
+                                <h1>${BANK_NAME}</h1>
+                                <div class="subtitle">综合金融服务</div>
+                            </div>
+                        </div>
+                        <div class="user-area">
+                            <div class="user-greeting">${user.name}，您好</div>
+                            <div class="user-actions">
+                                <button id="btnLogout">注销登录</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;">
+                            <div>
+                                <span style="font-weight:600;">当前账户：</span>
+                                <select id="accountSelector" style="padding:6px;border:1px solid #e2e8f0;border-radius:4px;">${accountOptions}</select>
+                                <span style="margin-left:10px;font-size:0.8rem;color:#4a5568;">账号 ${account.accountNumber}</span>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-primary" id="btnNewAccount">+ 新增账户</button>
+                            </div>
+                        </div>
+                        <div class="balance-label" style="margin-top:16px;">可用余额</div>
+                        <div class="balance-large" id="balanceDisplay">${formatCurrency(account.balance)}</div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div>
+                            <div class="card">
+                                <div class="card-title"><span class="title-dot"></span>存款</div>
+                                <div class="input-group">
+                                    <div class="input-field"><label>金额</label><input type="number" class="amount-input" id="depositAmount" placeholder="0.00" step="0.01" min="0"></div>
+                                    <button class="btn btn-accent" id="btnDeposit">存入</button>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-title"><span class="title-dot"></span>取款</div>
+                                <div class="input-group">
+                                    <div class="input-field"><label>金额</label><input type="number" class="amount-input" id="withdrawAmount" placeholder="0.00" step="0.01" min="0"></div>
+                                    <button class="btn btn-danger" id="btnWithdraw">取出</button>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-title"><span class="title-dot"></span>转账</div>
+                                <div class="input-field"><label>对方账号</label><input type="text" id="transferAccount" placeholder="输入完整账号"></div>
+                                <div class="input-group">
+                                    <div class="input-field"><label>金额</label><input type="number" class="amount-input" id="transferAmount" placeholder="0.00" step="0.01"></div>
+                                    <button class="btn btn-primary" id="btnTransfer">转账</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title"><span class="title-dot"></span>股票市场</div>
+                                    <button class="btn btn-sm btn-accent" id="btnAddStock">+ 添加股票</button>
+                                </div>
+                                <div style="overflow-x:auto;">
+                                    <table class="stock-table">
+                                        <thead><tr><th>代码</th><th>名称</th><th>价格</th><th>涨跌</th><th>操作</th></tr></thead>
+                                        <tbody id="stockTableBody">${stockTableRows}</tbody>
+                                    </table>
+                                </div>
+                                <div style="font-size:0.7rem;color:#6b7280;margin-top:6px;">价格每3秒自动更新</div>
+                            </div>
+                            <div class="card">
+                                <div class="card-title"><span class="title-dot"></span>我的持仓</div>
+                                <div id="holdingsContainer">${holdingsHtml}</div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title"><span class="title-dot"></span>交易记录</div>
+                                    <span style="font-size:0.7rem;">最近8笔</span>
+                                </div>
+                                <ul class="tx-list" id="txListContainer">${txHtml}</ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function refreshStockDisplay() {
+                // 局部更新股票表格和持仓，避免整个页面重渲染
+                const data = getData();
+                const stockPool = data.stockPool;
+                const tbody = document.getElementById('stockTableBody');
+                if(tbody) {
+                    tbody.innerHTML = stockPool.map(s => {
+                        const changeClass = s.change >= 0 ? 'change-positive' : 'change-negative';
+                        const changeSign = s.change >= 0 ? '+' : '';
+                        return `
+                            <tr>
+                                <td><strong>${s.symbol}</strong></td>
+                                <td>${s.name}</td>
+                                <td class="price">${formatNumber(s.price)}</td>
+                                <td class="${changeClass}">${changeSign}${formatNumber(s.change)} (${changeSign}${s.changePercent}%)</td>
+                                <td>
+                                    <button class="btn btn-sm btn-accent btn-trade buy-stock" data-symbol="${s.symbol}">买入</button>
+                                    <button class="btn btn-sm btn-danger btn-trade sell-stock" data-symbol="${s.symbol}">卖出</button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('') || '<tr><td colspan="5" style="text-align:center;color:#6b7280;padding:16px;">暂无股票，请添加</td></tr>';
+                    // 重新绑定买卖事件
+                    bindStockTradeEvents();
+                }
+                // 更新持仓
+                const account = data.accounts.find(a => a.id === appState.currentAccount.id);
+                if(account) {
+                    const holdings = data.stocks[account.id] || [];
+                    const container = document.getElementById('holdingsContainer');
+                    if(container) {
+                        container.innerHTML = holdings.map(h => {
+                            const stock = stockPool.find(s => s.symbol === h.symbol);
+                            const currentPrice = stock ? stock.price : 0;
+                            const marketValue = currentPrice * h.qty;
+                            const cost = h.avgCost * h.qty;
+                            const profit = marketValue - cost;
+                            const profitClass = profit >= 0 ? 'change-positive' : 'change-negative';
+                            return `
+                                <div class="holding-item">
+                                    <div>
+                                        <strong>${h.symbol}</strong> <span class="holding-qty">${h.qty} 股</span>
+                                        <div style="font-size:0.7rem;color:#6b7280;">成本 ${formatNumber(h.avgCost)} | 现价 ${formatNumber(currentPrice)}</div>
+                                    </div>
+                                    <div class="${profitClass}" style="font-weight:600;">${profit >= 0 ? '+' : ''}${formatCurrency(profit)}</div>
+                                </div>
+                            `;
+                        }).join('') || '<div style="text-align:center;color:#6b7280;padding:12px;">暂无持仓</div>';
+                    }
+                }
+            }
+
+            function bindStockTradeEvents() {
+                document.querySelectorAll('.buy-stock').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const symbol = this.dataset.symbol;
+                        const data = getData();
+                        const stock = data.stockPool.find(s => s.symbol === symbol);
+                        if(!stock) return;
+                        showModal('买入股票', `确定买入 ${stock.name} (${symbol})？<br>当前价格：${formatNumber(stock.price)}<br>数量：<input type="number" id="stockQty" value="10" min="1" step="1" style="width:80px;margin-left:5px;">`, () => {
+                            const qty = parseInt(document.getElementById('stockQty').value);
+                            if(isNaN(qty) || qty <= 0) { showToast('数量无效','error'); return; }
+                            const totalCost = stock.price * qty;
+                            const acc = data.accounts.find(a => a.id === appState.currentAccount.id);
+                            if(!acc || acc.balance < totalCost) {
+                                showToast('余额不足','error'); return;
+                            }
+                            updateData(d => {
+                                const account = d.accounts.find(a => a.id === appState.currentAccount.id);
+                                if(!account) return d;
+                                account.balance = Math.round((account.balance - totalCost) * 100) / 100;
+                                if(!d.stocks[account.id]) d.stocks[account.id] = [];
+                                const holding = d.stocks[account.id].find(h => h.symbol === symbol);
+                                if(holding) {
+                                    const totalQty = holding.qty + qty;
+                                    holding.avgCost = ((holding.avgCost * holding.qty) + totalCost) / totalQty;
+                                    holding.qty = totalQty;
+                                } else {
+                                    d.stocks[account.id].push({ symbol, qty, avgCost: stock.price });
+                                }
+                                d.transactions.unshift({
+                                    id: generateId(),
+                                    accountId: account.id,
+                                    type: 'stock-buy',
+                                    amount: totalCost,
+                                    balanceAfter: account.balance,
+                                    timestamp: nowISO(),
+                                    description: `买入${symbol} ${qty}股`
+                                });
+                                return d;
+                            });
+                            refreshStockDisplay();
+                            animateBalance();
+                            showToast(`买入 ${qty} 股 ${symbol}`,'success');
+                        });
+                    });
+                });
+
+                document.querySelectorAll('.sell-stock').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const symbol = this.dataset.symbol;
+                        const data = getData();
+                        const holdings = data.stocks[appState.currentAccount.id] || [];
+                        const holding = holdings.find(h => h.symbol === symbol);
+                        if(!holding || holding.qty <= 0) {
+                            showToast('没有持仓','error'); return;
+                        }
+                        const stock = data.stockPool.find(s => s.symbol === symbol);
+                        showModal('卖出股票', `持仓 ${holding.qty} 股，成本 ${formatNumber(holding.avgCost)}<br>当前价格：${stock ? formatNumber(stock.price) : '--'}<br>卖出数量：<input type="number" id="sellQty" value="${Math.min(holding.qty, 10)}" min="1" max="${holding.qty}" step="1" style="width:80px;">`, () => {
+                            const qty = parseInt(document.getElementById('sellQty').value);
+                            if(isNaN(qty) || qty <= 0 || qty > holding.qty) {
+                                showToast('数量无效','error'); return;
+                            }
+                            const currentPrice = stock ? stock.price : 0;
+                            const revenue = currentPrice * qty;
+                            updateData(d => {
+                                const account = d.accounts.find(a => a.id === appState.currentAccount.id);
+                                if(!account) return d;
+                                account.balance = Math.round((account.balance + revenue) * 100) / 100;
+                                const hold = d.stocks[account.id].find(h => h.symbol === symbol);
+                                hold.qty -= qty;
+                                if(hold.qty === 0) {
+                                    d.stocks[account.id] = d.stocks[account.id].filter(h => h.symbol !== symbol);
+                                }
+                                d.transactions.unshift({
+                                    id: generateId(),
+                                    accountId: account.id,
+                                    type: 'stock-sell',
+                                    amount: revenue,
+                                    balanceAfter: account.balance,
+                                    timestamp: nowISO(),
+                                    description: `卖出${symbol} ${qty}股`
+                                });
+                                return d;
+                            });
+                            refreshStockDisplay();
+                            animateBalance();
+                            showToast(`卖出 ${qty} 股 ${symbol}`,'success');
+                        });
+                    });
+                });
+            }
+
+            function bindDashboardEvents() {
+                document.getElementById('btnLogout').addEventListener('click', () => {
+                    appState.currentUser = null;
+                    appState.currentAccount = null;
+                    appState.view = 'login';
+                    renderApp();
+                });
+                document.getElementById('accountSelector').addEventListener('change', function(e) {
+                    const data = getData();
+                    const acc = data.accounts.find(a => a.id === e.target.value);
+                    if(acc) {
+                        appState.currentAccount = { id: acc.id, accountNumber: acc.accountNumber, balance: acc.balance };
+                        renderApp();
+                    }
+                });
+                document.getElementById('btnNewAccount').addEventListener('click', () => {
+                    showModal('新增账户', '将为您创建一个新的储蓄账户，确认继续？', () => {
+                        const data = getData();
+                        const accId = generateId();
+                        const newAcc = {
+                            id: accId,
+                            userId: appState.currentUser.id,
+                            accountNumber: '6222' + Date.now().toString().slice(-12),
+                            balance: 0,
+                            type: '储蓄账户'
+                        };
+                        data.accounts.push(newAcc);
+                        data.stocks[accId] = [];
+                        saveData(data);
+                        appState.currentAccount = { id: accId, accountNumber: newAcc.accountNumber, balance: 0 };
+                        renderApp();
+                        showToast('新账户已创建','success');
+                    });
+                });
+                document.getElementById('btnDeposit').addEventListener('click', () => {
+                    const amount = parseFloat(document.getElementById('depositAmount').value);
+                    if(isNaN(amount) || amount <= 0) { showToast('请输入有效金额','error'); return; }
+                    updateData(d => {
+                        const acc = d.accounts.find(a => a.id === appState.currentAccount.id);
+                        if(!acc) return d;
+                        acc.balance = Math.round((acc.balance + amount) * 100) / 100;
+                        d.transactions.unshift({
+                            id: generateId(),
+                            accountId: acc.id,
+                            type: 'deposit',
+                            amount,
+                            balanceAfter: acc.balance,
+                            timestamp: nowISO(),
+                            description: '柜台存款'
+                        });
+                        return d;
+                    });
+                    document.getElementById('depositAmount').value = '';
+                    renderApp();
+                    animateBalance();
+                    showToast('存款成功','success');
+                });
+                document.getElementById('btnWithdraw').addEventListener('click', () => {
+                    const amount = parseFloat(document.getElementById('withdrawAmount').value);
+                    if(isNaN(amount) || amount <= 0) { showToast('请输入有效金额','error'); return; }
+                    const data = getData();
+                    const acc = data.accounts.find(a => a.id === appState.currentAccount.id);
+                    if(!acc || amount > acc.balance) { showToast('余额不足','error'); return; }
+                    updateData(d => {
+                        const account = d.accounts.find(a => a.id === appState.currentAccount.id);
+                        if(!account) return d;
+                        account.balance = Math.round((account.balance - amount) * 100) / 100;
+                        d.transactions.unshift({
+                            id: generateId(),
+                            accountId: account.id,
+                            type: 'withdraw',
+                            amount,
+                            balanceAfter: account.balance,
+                            timestamp: nowISO(),
+                            description: '柜台取款'
+                        });
+                        return d;
+                    });
+                    document.getElementById('withdrawAmount').value = '';
+                    renderApp();
+                    animateBalance();
+                    showToast('取款成功','success');
+                });
+                document.getElementById('btnTransfer').addEventListener('click', () => {
+                    const targetAccNum = document.getElementById('transferAccount').value.trim();
+                    const amount = parseFloat(document.getElementById('transferAmount').value);
+                    if(!targetAccNum || isNaN(amount) || amount <= 0) {
+                        showToast('请输入完整信息','error'); return;
+                    }
+                    const data = getData();
+                    const fromAcc = data.accounts.find(a => a.id === appState.currentAccount.id);
+                    if(!fromAcc || amount > fromAcc.balance) { showToast('余额不足','error'); return; }
+                    const toAcc = data.accounts.find(a => a.accountNumber === targetAccNum);
+                    if(!toAcc) { showToast('对方账号不存在','error'); return; }
+                    if(toAcc.id === fromAcc.id) { showToast('不能转账给自己','error'); return; }
+                    updateData(d => {
+                        const fAcc = d.accounts.find(a => a.id === fromAcc.id);
+                        const tAcc = d.accounts.find(a => a.id === toAcc.id);
+                        if(!fAcc || !tAcc) return d;
+                        fAcc.balance = Math.round((fAcc.balance - amount) * 100) / 100;
+                        tAcc.balance = Math.round((tAcc.balance + amount) * 100) / 100;
+                        const ts = nowISO();
+                        d.transactions.unshift({
+                            id: generateId(),
+                            accountId: fAcc.id,
+                            type: 'transfer-out',
+                            amount,
+                            balanceAfter: fAcc.balance,
+                            timestamp: ts,
+                            description: `转账至 ${tAcc.accountNumber.slice(-4)}`
+                        });
+                        d.transactions.unshift({
+                            id: generateId(),
+                            accountId: tAcc.id,
+                            type: 'transfer-in',
+                            amount,
+                            balanceAfter: tAcc.balance,
+                            timestamp: ts,
+                            description: `来自 ${fAcc.accountNumber.slice(-4)} 转入`
+                        });
+                        return d;
+                    });
+                    document.getElementById('transferAmount').value = '';
+                    document.getElementById('transferAccount').value = '';
+                    renderApp();
+                    animateBalance();
+                    showToast('转账成功','success');
+                });
+                // 添加股票按钮
+                document.getElementById('btnAddStock').addEventListener('click', () => {
+                    showModal('添加股票', '请输入股票代码、名称和初始价格：<br><input type="text" id="newSymbol" placeholder="代码，如 AAPL" style="width:100%;margin:4px 0;"><input type="text" id="newName" placeholder="名称，如 苹果公司" style="width:100%;margin:4px 0;"><input type="number" id="newPrice" placeholder="初始价格" step="0.01" style="width:100%;margin:4px 0;">', () => {
+                        const symbol = document.getElementById('newSymbol').value.trim().toUpperCase();
+                        const name = document.getElementById('newName').value.trim();
+                        const price = parseFloat(document.getElementById('newPrice').value);
+                        if(!symbol || !name || isNaN(price) || price <= 0) {
+                            showToast('请填写完整信息','error'); return;
+                        }
+                        const data = getData();
+                        if(data.stockPool.some(s => s.symbol === symbol)) {
+                            showToast('股票代码已存在','error'); return;
+                        }
+                        data.stockPool.push({
+                            symbol,
+                            name,
+                            price: price,
+                            prevClose: price,
+                            change: 0,
+                            changePercent: 0
+                        });
+                        saveData(data);
+                        renderApp();
+                        showToast(`股票 ${symbol} 已添加`,'success');
+                    });
+                });
+                // 绑定股票买卖事件
+                bindStockTradeEvents();
+            }
+
+            function animateBalance() {
+                const el = document.getElementById('balanceDisplay');
+                if(el) {
+                    el.classList.remove('pop');
+                    void el.offsetWidth;
+                    el.classList.add('pop');
+                }
+            }
+
+            function updateLiveTime() {
+                const el = document.getElementById('liveTime');
+                if(el) {
+                    el.textContent = new Date().toLocaleString('zh-CN', {
+                        year:'numeric', month:'2-digit', day:'2-digit',
+                        hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
+                    });
+                }
+            }
+
+            function init() {
+                setInterval(updateLiveTime, 1000);
+                appState.view = 'login';
+                renderApp();
+            }
+            document.addEventListener('DOMContentLoaded', init);
+            window.ZHZGUB = {
+                resetData: () => {
+                    localStorage.removeItem(STORAGE_KEY);
+                    appState.currentUser = null;
+                    appState.currentAccount = null;
+                    appState.view = 'login';
+                    renderApp();
+                    showToast('数据已重置','info');
+                },
+                getState: () => appState,
+            };
+        })();
+    </script>
+</body>
+</html>
